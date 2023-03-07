@@ -11,6 +11,8 @@ $app = new App;
 $name = $_SESSION ['firstname'];
 $settings = $app->appsettings();
 $did = $_GET['did'];
+$user_id = $_SESSION['id'];
+$rights = $app->getmyrights($user_id);
 
 
 ?>
@@ -198,7 +200,18 @@ include ('../includes/sidebar.php');
 
                    <div class="box-footer">
                     <button type="button" class="btn btn-default" onclick="parent.location=''">Back</button>
-                    <button type="submit" class="btn btn-info pull-right submit-button">Submit</button>
+                                <?php
+
+                        if($rights){
+
+                            echo '<button type="submit" class="btn btn-info pull-right submit-button">Submit</button>';
+
+                        } else {
+
+                        }
+
+                    ?>
+                    
                 </div><!-- /.box-footer -->
      </form>
 </div>

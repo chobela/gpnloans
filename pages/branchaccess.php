@@ -73,7 +73,7 @@ $checked_arr = array();
       $result = mysqli_fetch_assoc($branches);
       $checked_arr = explode(",",$result['branchaccess']);
 
-      $branch_arr = array('1','2','3');
+      $branch_arr = array('1','2','3','4','5','6','7','8','9');
 
 
     foreach($branch_arr as $branch){
@@ -81,15 +81,38 @@ $checked_arr = array();
 
 switch ($branch) {
   case '1':
-    $label = 'MAIN BRANCH';
+    $label = 'MWASE BRANCH';
     break;
 
   case '2':
-    $label = 'EMUSA BRANCH';
+    $label = 'BRANCH 2';
     break;
 
   case '3':
     $label = 'BRANCH 3';
+    break;
+
+      case '4':
+    $label = 'BRANCH 4';
+    break;
+
+  case '5':
+    $label = 'BRANCH 5';
+    break;
+
+  case '6':
+    $label = 'BRANCH 6';
+    break;
+      case '7':
+    $label = 'BRANCH 7';
+    break;
+
+  case '8':
+    $label = 'BRANCH 8';
+    break;
+
+  case '9':
+    $label = 'BRANCH 9';
     break;
 
 }

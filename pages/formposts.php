@@ -12,6 +12,8 @@ $sms = new SMS;
 $form = $_POST['mm_insert'];
 $systuser = $_SESSION ['firstname'];
 
+$smstype = $app->sms_settings();
+
 if ($form == 'add_debtor') {
 
   $firstname = $_POST['firstname'];
@@ -41,6 +43,8 @@ if ($form == 'add_debtor') {
 
   $phone = $app->get_debtor_phone($debtor);
 
+  if($smstype['sms1'] == '1' ){
+
     /********** Begin Send SMS *********/
       $sms->Debtor = $debtor;
 
@@ -53,10 +57,58 @@ if ($form == 'add_debtor') {
       $sms->sendSMS();
   
 /********** End Send SMS *********/
-
+}
   header('location:debtors.php');
 
-} else if ($form == 'add_employee') {
+} else if ($form == 'reg_debtor') {
+
+  $firstname = $_POST['firstname'];
+  $lastname = $_POST['lastname'];
+  $business = $_POST['business'];
+  $uid = $_POST['uid'];
+  $gender = $_POST['gender'];
+  $title = $_POST['title'];
+  $p = $_POST['phone'];
+  $email = $_POST['email'];
+  $dob = $_POST['dob'];
+  $address = $_POST['address'];
+  $city = $_POST['city'];
+  $province = $_POST['province'];
+  $landline = $_POST['landline'];
+  $status = $_POST['status'];
+  $photo = $_FILES['bpic'];
+  $photoname = $photo['name'];
+  $idpic = $_FILES['bid'];
+  $idpicname = $idpic['name'];
+  $docs = $_FILES['file']['name'];
+
+  $phone = '26'.$p;
+
+
+  $debtor = $app->reg_debtor($firstname, $lastname, $business, $uid, $gender, $title, $phone, $email, $dob, $address, $city, $province, $landline, $status, $photo, $photoname, $idpic, $idpicname, $docs);
+
+  $phone = $app->get_debtor_phone($debtor);
+
+  if($smstype['sms1'] == '1' ){
+
+    /********** Begin Send SMS *********/
+      $sms->Debtor = $debtor;
+
+      $sms->Destination = $phone;
+      
+      $sms->SenderAddress = 'GPN Loans';
+      
+      $sms->Message  = 'Dear customer, your application form was uploaded successfully. Please wait for approval through SMS in the next few minutes. GPN LOANS your business partner';
+      
+      $sms->sendSMS();
+  
+/********** End Send SMS *********/
+}
+  header('location:../../index.php');
+
+} 
+
+else if ($form == 'add_employee') {
 
 
   $title = $_POST['title'];
@@ -463,6 +515,7 @@ else if ($form == 'send_sms') {
 
 else if ($form == 'add_loan') {
 
+
   $loantype = $_POST['loantype'];
   $debtor = $_POST['debtor'];
   $amount = $_POST['amount'];
@@ -482,6 +535,12 @@ else if ($form == 'add_loan') {
   $app->add_loan($loantype, $debtor, $amount, $mysql_date, $colname, $serial, $modelname, $modelnumber, $color, $col_condition, $address, $inst);
 
   $phone = $app->get_debtor_phone($debtor);
+
+  $app->action(4,(-1 * $amount),$mysql_date);
+
+  if ($smstype['sms2'] == '1'){
+
+
   /********** Begin Send SMS *********/
       $sms->Debtor = $debtor;
 
@@ -494,11 +553,87 @@ else if ($form == 'add_loan') {
       $sms->sendSMS();
   
 /********** End Send SMS *********/
+}
 
 
   header('location:viewloans.php');
 
-} else if ($form == 'edit_loan') {
+} 
+else if ($form == 'application') {
+
+
+  $loantype = $_POST['loantype'];
+  $debtor = $_POST['debtor'];
+  $amount = $_POST['amount'];
+  $date = $_POST['date'];
+  $colname = $_POST['col_name'];
+  $serial = $_POST['serial'];
+  $modelname = $_POST['modelname'];
+  $modelnumber = $_POST['modelnumber'];
+  $color = $_POST['color'];
+  $col_condition = $_POST['col_condition'];
+  $address = $_POST['address'];
+  $inst = $_POST['installments'];
+
+
+  $mysql_date = date('Y-m-d', strtotime($date));
+
+  $app->add_application($loantype, $debtor, $amount, $mysql_date, $colname, $serial, $modelname, $modelnumber, $color, $col_condition, $address, $inst);
+
+  $phone = $app->get_debtor_phone($debtor);
+
+
+
+  /********** Begin Send SMS *********/
+      $sms->Debtor = $debtor;
+
+      $sms->Destination = $phone;
+      
+      $sms->SenderAddress = 'GPN Loans';
+      
+      $sms->Message  = 'Dear customer thank you for your application. We will contact you as soon as your loan ia aproved';
+      
+      $sms->sendSMS();
+  
+/********** End Send SMS *********/
+
+
+
+  header('location:../index.php');
+
+}  
+
+else if ($form == 'edit_loan') {
+
+  $loanid = $_POST['loanid'];
+  $loantype = $_POST['loantype'];
+  $debtor = $_POST['debtor'];
+  $amount = $_POST['amount'];
+  $balance = $_POST['balance'];
+  $date = $_POST['date'];
+  $duedate = $_POST['duedate'];
+  $colname = $_POST['col_name'];
+  $serial = $_POST['serial'];
+  $modelname = $_POST['modelname'];
+  $modelnumber = $_POST['modelnumber'];
+  $color = $_POST['color'];
+  $col_condition = $_POST['col_condition'];
+  $address = $_POST['address'];
+  $interest = $_POST['interest'];
+  $currentbalance = $_POST['balance'];
+  $oldprincipal = $_POST['oldprincipal'];
+
+
+  $mysql_date = date('Y-m-d', strtotime($date));
+  $mysql_date2 = date('Y-m-d', strtotime($duedate));
+
+  $app->edit_loan($loanid, $loantype, $debtor, $amount, $balance, $mysql_date, $mysql_date2, $colname, $serial, $modelname, $modelnumber, $color, $col_condition, $address);
+
+
+
+  header('location:editloan.php?lid='.$loanid);
+
+} else if ($form == 'new_mwase') {
 
   $loanid = $_POST['loanid'];
   $loantype = $_POST['loantype'];
@@ -513,27 +648,24 @@ else if ($form == 'add_loan') {
   $col_condition = $_POST['col_condition'];
   $address = $_POST['address'];
   $interest = $_POST['interest'];
-  $currentbalance = $_POST['balance'];
+  $paymethod = $_POST['paymethod'];
+  $balance = $_POST['balance'];
   $oldprincipal = $_POST['oldprincipal'];
 
 
-//calculate new actual balance
-//calculate old actual balance - current balance = value
-//new balance = new actual balance - value
-  $newbalance = ($amount * $interest/100) + $amount; //[3000]
-  $oldbalance = ($oldprincipal * $interest/100) + $oldprincipal;//[1750]
-  $difference = $oldbalance - $currentbalance; //[500]
-  $finalbalance = $newbalance - $difference; //2500
 
 
   $mysql_date = date('Y-m-d', strtotime($date));
 
- echo $app->edit_loan($loanid, $loantype, $debtor, $amount, $finalbalance, $mysql_date, $colname, $serial, $modelname, $modelnumber, $color, $col_condition, $address);
+ $app->new_mwase($loanid, $loantype, $debtor, $amount, $balance, $mysql_date, $colname, $serial, $modelname, $modelnumber, $color, $col_condition, $address, $paymethod);
 
 
   header('location:editloan.php?lid='.$loanid);
 
-}  else if ($form == 'add_payment') {
+} 
+
+
+ else if ($form == 'add_payment') {
 
   $loanid = $_POST['loanid'];
   $debtor = $_POST['debtor'];
@@ -548,6 +680,10 @@ else if ($form == 'add_loan') {
 
   $phone = $app->get_number($debtor);
 
+$app->action('5', $amount,$mysql_date);
+
+  if($smstype['sms3'] == '1'){
+
   /********** Begin Send SMS *********/
       $sms->Debtor = $debtor;
 
@@ -561,21 +697,50 @@ else if ($form == 'add_loan') {
   
 /********** End Send SMS *********/
 
-echo $loanid;
+}
   header('location:payments.php');
 
 } else if ($form == 'update_config') {
 
-  $appname = $_POST['name'];
-  $senderid = $_POST['senderid'];
+    $appname = $_POST['name'];
+  $obalance = $_POST['obalance'];
   $file = $_FILES['file'];
   $filename = $file['name'];
 
 
-  $app->edit_app($appname, $senderid, $file, $filename);
+
+     if( isset($_POST['sms1'])){
+    $sms1 = '1';
+  } else {
+    $sms1 = '0';
+  }
+
+    if( isset($_POST['sms2'])){
+    $sms2 = '1';
+  } else {
+    $sms2 = '0';
+  }
+
+      if( isset($_POST['sms3'])){
+    $sms3 = '1';
+  } else {
+    $sms3 = '0';
+  }
+
+  if($file['size'] == 0 ){
+
+    $app->edit_app_nologo($appname, $obalance);
+
+  } else {
+
+    $app->edit_app($appname, $obalance, $file, $filename);
+
+  }
+
+  $app->sms_set($sms1, $sms2, $sms3);
 
 
-  header('location:c_settings.php');
+ // header('location:c_settings.php');
 
 } else if ($form == 'edit_menus') {
 
@@ -728,11 +893,15 @@ else if ($form == 'sale_paymentx') {
 
     $app->add_income($colname.' Sale', $value, $mysql_date);
 
+     $app->action('7', $amount,$mysql_date);
+
   } else if($amount < $colvalue) {
 
     $value = $colvalue - $amount;
 
      $app->add_expense($colname.' Sale', $value, $mysql_date);
+
+     $app->action('9',(-1 * $amount),$mysql_date);
 
     
   }
@@ -827,6 +996,8 @@ else if ($form == 'add_sale') {
   $next = date('Y-m-d', strtotime($date2));
  
   echo $app -> add_sale($item, $price, $debtor, $owing, $inst, $sdate, $next);
+
+   $app->action('10', $amount ,$mysql_date);
 
   header('location:sales.php');
 

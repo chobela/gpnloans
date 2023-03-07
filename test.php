@@ -1,12 +1,16 @@
 <?php
-/*require __DIR__ . '/vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
 
-$key = $_SERVER['SECRET_KEY'];
 
-echo $key;*/
-$date = date('Y-m-d H:i:s');
-echo $date;
+if(!preg_match("/$10-100000/0-99/0-9]/i", '404')) {
+
+   echo 'Correct NRC';
+
+} else {
+
+   echo 'Wrong NRC';
+}
+
+
+
 
 ?>

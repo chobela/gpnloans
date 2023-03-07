@@ -9,16 +9,17 @@ $app = new App;
 
 
 $name = $_SESSION ['firstname'];
+$branch = $_SESSION['branchname'];
 $lid = $_GET['lid'];
 $settings = $app->appsettings();
 
- $loantype = $app->singleloantype($lid);
- $d = $app->singleloandebtor($lid);
- $amount = $app->singleamount($lid);
- $date = $app->singledate($lid);
- $duedate = $app->duedate($lid);
- $col = $app->singleloan($lid);
- $loandebtor = $app->getloandebtor($lid)
+$loantype = $app->singleloantype($lid);
+$d = $app->singleloandebtor($lid);
+$amount = $app->applicationamount($lid);
+$date = $app->applicationdate($lid);
+$duedate = $app->applicationduedate($lid);
+$col = $app->appliedloans($lid);
+$loandebtor = $app->getapplieddebtor($lid);
 
 
 ?>
@@ -59,7 +60,14 @@ include ('../includes/sidebar.php');
     
 
  <div class="box box-info">
-     <form action="formposts.php" class="form-horizontal" method="post" enctype="multipart/form-data" name="form" id="form">
+     <form action="<?php
+
+     if($branch == 'OLD MWASE'){
+        echo 'newmwase.php';
+        } else {
+        echo 'formposts.php';
+        }
+ ?>" class="form-horizontal" method="post" enctype="multipart/form-data" name="form" id="form">
 
 <div class="box-body">
     
@@ -94,9 +102,9 @@ include ('../includes/sidebar.php');
                 </div>
 
                 <div class="form-group">
-                    <label for="inputCollateralSerialNumber" class="col-sm-3 control-label">Current Balance(K)</label>                      
+                    <label for="inputCollateralSerialNumber" class="col-sm-3 control-label">Balance(K)</label>                      
                     <div class="col-sm-6">
-                        <input type="number" class="form-control" placeholder="Balance" value="<?php echo $amount['balance']?>" name="balance" id="balance">
+                        <input type="number" name="xbalance" class="form-control" placeholder="Balance" value="<?php echo $amount['balance']?>" name="balance" id="xbalance">
       
                     </div>
                 </div>
@@ -123,8 +131,7 @@ include ('../includes/sidebar.php');
                     </div>
                 </div>
 
-
-                           <div class="form-group">
+                <div class="form-group">
                     <label for="inputCollateralSerialNumber" class="col-sm-3 control-label">Due Date</label>                      
                     <div class="col-sm-6">
                       <div class="input-group date">
@@ -133,18 +140,19 @@ include ('../includes/sidebar.php');
                        <div class="input-group-addon">
                     <i class="fa fa-calendar"></i>
                   </div>
-                        <input type="text" name="duedate" class="form-control" id="duedatepicker" placeholder="Due Date" value="<?php
+                        <input type="text" name="due_date" class="form-control" id="datepicker44" placeholder="Date" value="<?php
                               // Creating timestamp from given date
                               $timestamp = strtotime($duedate['due_date']);
                                
                               // Creating new date format from that timestamp
-                              $d_date = date("m/d/Y", $timestamp);
-                              echo $d_date; // Outputs: 31-03-2019
+                              $due_date = date("m/d/Y", $timestamp);
+                              echo $due_date; // Outputs: 31-03-2019
 
                         ?>">
                         </div>
                     </div>
                 </div>
+
 
             
 
@@ -215,18 +223,35 @@ include ('../includes/sidebar.php');
                   <input type="hidden" name="debtor" class="form-control" id="debtor" value="<?php echo $loandebtor['did']?>">
                   <input type="hidden" name="loanid" class="form-control" id="loanid" value="<?php echo $lid?>">
                   <input type="hidden" name="interest" class="form-control" id="interest" value="<?php echo $loantype['interest']?>">
-                
-                   <input type="hidden" class="form-control" value="<?php echo $amount['amount']?>" name="oldprincipal" id="oldprincipal">
+
+            <input type="hidden" name="balance" class="form-control" id="balance" value="<?php echo $amount['balance']?>">
+                   
+            <input type="hidden" class="form-control" value="<?php echo $amount['amount']?>" name="oldprincipal" id="oldprincipal">
                   
 
 
                    <div class="box-footer">
-                    <button type="button" class="btn btn-default" onclick="parent.location=''">Back</button>
-                    <button type="submit" class="btn btn-info pull-right submit-button">Update</button>
+            <button type="button" class="btn btn-default" onclick="parent.location=''">Back</button>
+
+            <?php
+
+            if($branch == 'OLD MWASE'){
+
+                echo ' <button type="submit" class="btn btn-warning pull-right  submit-button">Send to New Mwase</button>';
+
+            } else {
+
+                 echo ' <button type="submit" class="btn btn-primary pull-right  submit-button">Save Changes</button>';
+            }
+
+            ?>
+           
+                  
                 </div><!-- /.box-footer -->
      </form>
 </div>
 <!-- /.box -->
+  <div class="box-footer"></div>
 
 
     </section>

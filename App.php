@@ -2,7 +2,7 @@
 
 class App{
     public $dbHost     = "localhost";
-    public $dbPassword = "theresa1";
+    public $dbPassword = "Theres@1#";
   
     public function __construct(){
         if(!isset($this->db)){
@@ -29,6 +29,30 @@ $conn = new mysqli($this->dbHost, $_SESSION['dbusername'], $this->dbPassword, $_
      }
    }  
 
+  function sms_settings(){
+
+   $sql = "SELECT * FROM config";
+
+         $result = $this->db->query($sql);
+         $row = $result -> fetch_assoc();
+         return $row;
+
+   }
+
+    function action($action, $cash, $date) {
+
+        $sql = "INSERT INTO cashbook (action, cash, date) VALUES ('$action', '$cash', '$date')";
+
+        $this->db->query($sql);
+        
+   } 
+
+    function viewcashbook(){
+         $sql = "SELECT * FROM `cashbook` LEFT JOIN transtypes ON cashbook.action = transtypes.id";
+         $result = $this->db->query($sql);
+         return $result;
+   }
+
    function getPurchase_bi_id($id){
 
         $sql = "SELECT purchases.*, statuses.status AS st, debtors.id AS did, debtors.title, debtors.fname, debtors.lname FROM purchases LEFT JOIN statuses ON purchases.status = statuses.id LEFT JOIN debtors ON purchases.buyer_id = debtors.id WHERE purchases.id = '$id'";
@@ -39,7 +63,34 @@ $conn = new mysqli($this->dbHost, $_SESSION['dbusername'], $this->dbPassword, $_
    }
 
 
+   function mybalance() {
 
+     $cash = $this-> getobalance() + $this-> getcashbalance();
+
+     return $cash;
+
+
+   }
+
+         function getcashbalance(){
+
+   $sql = "SELECT SUM(cash) AS cash FROM cashbook";
+
+         $result = $this->db->query($sql);
+         $row = $result -> fetch_assoc();
+         return $row['cash'];
+
+   }
+
+      function getobalance(){
+
+   $sql = "SELECT obalance FROM config";
+
+         $result = $this->db->query($sql);
+         $row = $result -> fetch_assoc();
+         return $row['obalance'];
+
+   }
    
      function getDebtorInfo($did) {
     
@@ -572,10 +623,10 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
     function deleteEmp($id) {
         
          $sql = "DELETE FROM employees WHERE id = '$id'";
-         $sql .= "DELETE FROM advances WHERE eid = '$id'";
-         $sql .= "DELETE FROM commisions WHERE employee = '$id'";
+         //$sql .= "DELETE FROM advances WHERE eid = '$id'";
+         //$sql .= "DELETE FROM commisions WHERE employee = '$id'";
          
-         $this->db->multi_query($sql);
+        $this->db->query($sql);
 
    }   
 
@@ -584,6 +635,27 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
         
          $sql = "UPDATE loans SET frozen = '$f' WHERE id = '$id'";
          $this->db->query($sql);  
+
+          $sql3 = "SELECT amount, balance, loan_date, due_date FROM loans WHERE loanid = 'loanid'";
+       $rs = $this->db->query($sql3);
+       $row = $rs -> fetch_assoc();
+
+      
+        $principal = $row['amount'];
+        $balance = $row['balance'];
+        $loan_date = $row['loan_date'];
+        $due = $row['due_date'];
+        $actiondate = date('Y-m-d');
+
+        if ($f == '1') {
+    
+        $this->addstatement('5', $id, $principal, $balance, $actiondate, $loan_date, $due); 
+     } else {
+
+        $this->addstatement('6', $id, $principal, $balance, $actiondate, $loan_date, $due);
+
+     }
+        
    }   
 
     function resetBalance($id) {
@@ -776,18 +848,7 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
          }
    }  
 
-      function action($name, $action) {
-
-        $sql = "INSERT INTO activity (user, action) VALUES ('$name', '$action')";
-
-         $result = $this->db->query($sql);
-         
-         if ($result) {
-             return 'success';
-         } else {
-             return 'failed';
-         }
-   } 
+    
 
      function edit_loantype($loantypeid, $name, $days, $minamount, $collateral, $intrate, $grace, $intdefault, $paybackperiod, $msg1, $msg2txt) {
 
@@ -872,13 +933,10 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
              return 'failed';
          }
    }  
-
-//$appname, $denderid, $file, $filename
-        function edit_app($appname, $senderid, $file, $filename) {
+        function edit_app($appname, $obalance, $file, $filename) {
 
           $logo = rand(100,999). basename($filename);
-
-        $sql = "UPDATE config SET appname = '$appname', senderid = '$senderid', logo = '$logo'";
+$sql = "UPDATE config SET appname = '$appname', obalance = '$obalance', logo = '$logo'";
 
         $path = "../dist/img/".$logo;
         move_uploaded_file($file['tmp_name'], $path);
@@ -891,6 +949,30 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
              return 'failed';
          }
    }  
+
+   function edit_app_nologo($appname, $obalance) {
+
+          
+
+        $sql = "UPDATE config SET appname = '$appname', obalance = '$obalance'";
+
+    
+         $result = $this->db->query($sql);
+         
+         if ($result) {
+             return 'success';
+         } else {
+             return 'failed';
+         }
+   }  
+
+      function sms_set($sms1, $sms2, $sms3){
+
+      $sql = "UPDATE config SET sms1 = '$sms1', sms2 = '$sms2', sms3 = '$sms3'";
+     
+      $this->db->query($sql);
+
+   }
 
      function getroletypes() {
         
@@ -905,6 +987,15 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
          $result = $this->db->query($sql);
          return $result;
    }    
+
+          function getloandebtor($loanid) {
+        
+            $sql = "SELECT *, debtors.id AS did FROM loans LEFT JOIN debtors ON loans.debtor = debtors.id WHERE loans.id = '$loanid'";
+
+         $result = $this->db->query($sql);
+         $row = $result -> fetch_assoc();
+         return $row;
+   }   
 
         function getloantypes() {
         
@@ -972,9 +1063,6 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
        if ($s){
 
        $balance = ($amount * $int/100) + $amount; 
-     
-      
-
        
            for ($i = 1; $i <= $inst; $i++) 
         {
@@ -991,6 +1079,11 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
 
        $this->db->query($sql);
 
+       $loan_id = $this->db->insert_id;
+       $actiondate = date('Y-m-d');
+
+      $this->addstatement('1', $loan_id, $initial, $balance, $actiondate, $date, $due); 
+
         }
 
     
@@ -998,14 +1091,81 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
        }   
    }  
 
+
+   function add_application($loantype, $debtor, $amount, $date, $colname, $serial, $modelname, $modelnumber, $color, $col_condition, $address, $inst) {
+
+       $s = "SELECT interest, days FROM loan_types WHERE id = '$loantype'";
+       $rs = $this->db->query($s);
+       $row = $rs -> fetch_assoc();
+       $int = $row['interest'];
+       $days = $row['days'];
+       // return $days;
+
+       if ($s){
+
+       $balance = ($amount * $int/100) + $amount; 
+       
+           for ($i = 1; $i <= $inst; $i++) 
+        {
+            $next = $i * 30;
+         
+            $due = date('Y-m-d', strtotime($date. ' + '.$next.' days'));
+          
+
+            $initial = $amount / $inst;
+            $owe = $balance / $inst;
+
+          
+            $sql = "INSERT INTO applications (loantype, debtor, amount, balance, col_name, serialnumber, model_name, modelnumber, color, col_condition, address, loan_date, due_date) VALUES ('$loantype', '$debtor', '$initial', '$owe', '$colname', '$serial', '$modelname', '$modelnumber', '$color', '$col_condition', '$address', '$date', '$due')";
+
+               $this->db->query($sql);
+
+               $loan_id = $this->db->insert_id;
+               $actiondate = date('Y-m-d');
+
+              $this->addstatement('1', $loan_id, $initial, $balance, $actiondate, $date, $due); 
+
+        }
+
+     }   
+   } 
+
+   function addstatement($ation, $loan_id, $initial, $balance, $date, $due){
+
+      $sql = "INSERT INTO statements (action, loanid, principal, balance, actiondate, loandate, duedate) VALUES ($ation, $loan_id, $initial, $balance, NOW(), $date, $due)";
+
+      $this->db->query($sql);
+   }
+
       function add_payment($loanid, $debtor, $amount, $date) {
 
 
         $sql = "INSERT INTO payments (loanid, debtor, amount, date) VALUES ('$loanid','$debtor', '$amount', '$date')";
+
         $sql2 = "UPDATE loans SET balance = (balance - '$amount') WHERE debtor = '$debtor' AND id = '$loanid'";
 
           $this->db->query($sql);
           $this->db->query($sql2);
+
+       $sql3 = "SELECT amount, balance, loan_date, due_date FROM loans WHERE id = 'loanid'";
+       $rs = $this->db->query($sql3);
+       $row = $rs -> fetch_assoc();
+
+        $principal = $row['amount'];
+        $balance = $row['balance'];
+        $loan_date = $row['loan_date'];
+        $due = $row['due_date'];
+        $actiondate = date('Y-m-d');
+
+      
+    
+        $this->addstatement('2', $loanid, $principal, $balance, $actiondate, $loan_date, $due);
+
+         
+     
+     
+
+        
        
    }  
 
@@ -1152,9 +1312,9 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
    }
 
 
-   function edit_loan($loanid, $loantype, $debtor, $amount, $newbalance, $date, $colname, $serial, $modelname, $modelnumber, $color, $col_condition, $address) {
+   function edit_loan($loanid, $loantype, $debtor, $amount, $newbalance, $date, $due, $colname, $serial, $modelname, $modelnumber, $color, $col_condition, $address) {
 
-    $due = date('Y-m-d', strtotime($date. ' + 30 days'));
+    //$due = date('Y-m-d', strtotime($date. ' + 30 days'));
 
         $sql = "UPDATE loans SET loantype = '$loantype', debtor = '$debtor', amount = '$amount', balance = $newbalance, col_name = '$colname', serialnumber = '$serial', model_name = '$modelname', modelnumber = '$modelnumber', color = '$color', col_condition = '$col_condition', address = '$address', loan_date = '$date', due_date = '$due' WHERE id = '$loanid'";
 
@@ -1170,6 +1330,13 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
         function getloans() {
         
          $sql = "SELECT loan_date, debtors.id AS ddid, loans.id AS loanid, debtors.title, debtors.fname, debtors.lname, loan_types.loan_name, loan_types.interest, loans.amount, loans.balance FROM loans LEFT JOIN loan_types ON loans.loantype = loan_types.id LEFT JOIN debtors ON loans.debtor = debtors.id WHERE loans.balance > 0";
+         $result = $this->db->query($sql);
+         return $result;
+   }    
+
+           function getapplications() {
+        
+         $sql = "SELECT loan_date, debtors.id AS ddid, applications.debtor AS loanid, debtors.title, debtors.fname, debtors.lname, loan_types.loan_name, loan_types.interest, applications.amount, applications.balance FROM applications LEFT JOIN loan_types ON applications.loantype = loan_types.id LEFT JOIN debtors ON applications.debtor = debtors.id WHERE applications.balance > 0";
          $result = $this->db->query($sql);
          return $result;
    }    
@@ -1214,6 +1381,14 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
          $result = $this->db->query($sql);
          $row = $result -> fetch_assoc();
          return $row['total'];
+   }
+
+
+   function getmyrights($id){
+         $sql = "SELECT rights FROM users WHERE id = '$id'";
+         $result = $this->db->query($sql);
+         $row = $result -> fetch_assoc();
+         return $row['rights'];
    }
    
       function lastpaydate($id){
@@ -1298,10 +1473,30 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
 
         function singleloans($idd) {
         
-            $sql = "SELECT loans.id AS lid, loans.frozen, loans.balance, loans.loan_date, loans.due_date, loan_types.loan_name,loans.amount, loan_types.interest FROM loans LEFT JOIN loan_types ON loans.loantype = loan_types.id WHERE loans.debtor = '$idd' AND loans.balance > 0";
+            $sql = "SELECT loans.id AS lid, loans.debtor AS did, loans.frozen, loans.balance, loans.loan_date, loans.due_date, loan_types.loan_name,loans.amount, loan_types.interest FROM loans LEFT JOIN loan_types ON loans.loantype = loan_types.id WHERE loans.debtor = '$idd' AND loans.balance > 0";
          $result = $this->db->query($sql);
          return $result;
    }    
+
+
+        function appliedloans($idd) {
+        
+            $sql = "SELECT applications.id AS lid, applications.debtor AS did, applications.balance, applications.loan_date, applications.due_date, loan_types.loan_name,applications.amount, loan_types.interest FROM applications LEFT JOIN loan_types ON applications.loantype = loan_types.id WHERE applications.debtor = '$idd' AND applications.balance > 0";
+         $result = $this->db->query($sql);
+         return $result;
+   }    
+
+
+
+           function getstatement($lid) {
+
+            //show -> action | principal amount| balance | loan date | due date
+        
+            $sql = "SELECT loanactions.actionname, loans.amount, loans.balance, statements.actiondate, statements.loandate, statements.duedate FROM statements LEFT JOIN loans ON statements.loanid = loans.id LEFT JOIN loanactions ON statements.action = loanactions.id WHERE statements.loanid = '$lid'";
+
+         $result = $this->db->query($sql);
+         return $result;
+   }  
 
 
         function singletrans($accnum) {
@@ -1347,9 +1542,9 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
 
   
 
-       function getloandebtor($loanid) {
+       function getapplieddebtor($loanid) {
         
-            $sql = "SELECT *, debtors.id AS did FROM loans LEFT JOIN debtors ON loans.debtor = debtors.id WHERE loans.id = '$loanid'";
+            $sql = "SELECT *, debtors.id AS did FROM applications LEFT JOIN debtors ON applications.debtor = debtors.id WHERE applications.id = '$loanid'";
 
          $result = $this->db->query($sql);
          $row = $result -> fetch_assoc();
@@ -1374,6 +1569,15 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
          return $row;
    }   
 
+         function singleapplicationdebtor($loanid) {
+        
+            $sql = "SELECT * FROM debtors LEFT JOIN loans ON applications.id = applications.debtor WHERE applications.id = '$loanid'";
+
+         $result = $this->db->query($sql);
+         $row = $result -> fetch_assoc();
+         return $row;
+   }   
+
          function singleamount($loanid) {
         
             $sql = "SELECT amount, balance FROM loans WHERE loans.id = '$loanid'";
@@ -1382,6 +1586,17 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
          $row = $result -> fetch_assoc();
          return $row;
    }   
+
+
+         function applicationamount($loanid) {
+        
+            $sql = "SELECT amount, balance FROM applications WHERE applications.id = '$loanid'";
+
+         $result = $this->db->query($sql);
+         $row = $result -> fetch_assoc();
+         return $row;
+   }   
+
 
      function singledate($loanid) {
         
@@ -1392,6 +1607,47 @@ VALUES ('$title', '$fname', '$lname', '$address', '$gender', '$phone', '$nrc', '
          return $row;
    }   
 
+
+     function duedate($loanid) {
+        
+            $sql = "SELECT due_date FROM loans WHERE loans.id = '$loanid'";
+
+         $result = $this->db->query($sql);
+         $row = $result -> fetch_assoc();
+         return $row;
+   }   
+
+
+     function applicationdate($loanid) {
+        
+            $sql = "SELECT loan_date FROM applications WHERE applications.id = '$loanid'";
+
+         $result = $this->db->query($sql);
+         $row = $result -> fetch_assoc();
+         return $row;
+   }   
+
+
+        function singleduedate($loanid) {
+        
+            $sql = "SELECT due_date FROM loans WHERE loans.id = '$loanid'";
+
+         $result = $this->db->query($sql);
+         $row = $result -> fetch_assoc();
+         return $row;
+   }
+
+
+        function applicationduedate($loanid) {
+        
+            $sql = "SELECT due_date FROM applications WHERE applications.id = '$loanid'";
+
+         $result = $this->db->query($sql);
+         $row = $result -> fetch_assoc();
+         return $row;
+   }
+
+ 
         function amountpaid($id) {
         
             $sql = "SELECT SUM (amount) AS paid FROM payments WHERE debtor = '$id'";
@@ -1464,7 +1720,7 @@ $sql = "INSERT INTO products (name, scode, duration, minbalance, intperiod, inte
         for ($i = 0; $i < $inst; $i++) 
         {
          
-            $c = date('Y-m-d', strtotime("+ 30 days", strtotime($c)));
+            $c = date('Y-m-d', strtotime(strtotime($c)));
 
             $d = date("Y-m-t", strtotime($c));
 

@@ -2,8 +2,8 @@
 #error_reporting(E_ALL);
 #ini_set('display_errors', 0);
 session_start();
-$_SESSION['dbusername'] = "u859960976_user";
-$_SESSION['datadb'] = "u859960976_gpn";
+$_SESSION['dbusername'] = "u471266640_userone";
+$_SESSION['datadb'] = "u471266640_dbone";
 
 
 include('includes/config.php');
@@ -92,7 +92,7 @@ $settings = $app->appsettings();
 
 .bg {
   /* The image used */
-  background-image: url("img/background.jpg");
+  background-image: url("img/background.png");
 
   /* Full height */
   height: 100%;
@@ -150,8 +150,8 @@ $settings = $app->appsettings();
       </div>
     </form>
 
-    <a href="#">I forgot my password</a><br>
-    <a href="register.html" class="text-center">Register a new membership</a>
+   <!-- <a href="#">I forgot my password</a><br>
+    <a href="register.html" class="text-center">Register a new membership</a>-->
 
   </div>
   <!-- /.login-box-body -->

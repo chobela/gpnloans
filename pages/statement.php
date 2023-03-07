@@ -10,6 +10,7 @@ $app = new App;
 
 $settings = $app->appsettings();
 $id = $_GET['did'];
+$lid = $_GET['lid'];
 $debtor = $app->singledebtor($id);
 $paid = $app->addmypayments($id);
 $lastpay = $app->lastpay($id);
@@ -67,7 +68,7 @@ height: 70px; /* only if you want fixed height */
             <!-- /.box-header -->
                 <div class="box-header">
                   <div class="title">
-                  ACTIVE LOAN(S) STATEMENT
+                  LOAN STATEMENT
                 </div>
                 </div>
             <div class="box-body">
@@ -77,20 +78,20 @@ height: 70px; /* only if you want fixed height */
                <tr>
        
           
-             <td>Release Date</td>           
-             <td>Loan type</td>
-             <td>Principal</td>
-             <td>Intrest rate</td>
-             <td>Amount due</td>
+             <td>Action</td>           
+             <td>Principal Amount</td>
+             <td>Balance</td>
+             <td>Action Date</td>
+             <td>Loan Date</td>
+             <td>Due Date</td>
             
-             <td>Last payment</td>
                   
                 </tr>
                 </thead>
              <tbody>
 
                    <?php
-  $sql = $app->singleloans($id);
+  $sql = $app->getstatement($lid);
   while($row=mysqli_fetch_array($sql))
   {
   ?>
@@ -98,34 +99,19 @@ height: 70px; /* only if you want fixed height */
 
 <tr>
  
-            <td><?php echo $row['loan_date']?></td>
-            <td><?php echo $row['loan_name']?></td>
+            <td><?php echo $row['actionname']?></td>
             <td><?php echo 'K '.number_format($row['amount'],2)?></td>
-            <td><?php echo $row['interest'].'%'?></td>
-            <td>
-               <?php echo 'K '.number_format($row['balance'],2); ?>
-            </td>
-      
-            <td><?php echo $lastpay['date']; ?></td>
+            <td><?php echo 'K '.number_format($row['balance'],2)?></td>
+            <td><?php echo $row['actiondate']; ?></td>
+            <td><?php echo $row['actiondate']; ?></td>
+            <td><?php echo $row['duedate']; ?></td>
             
           
                 </tr>
               <?php } ?>
 
                 </tbody>
-                 <tfoot class="bg-gray">
-                     <tr>
-                        <th style="text-align:right" class="text-right" rowspan="1" colspan="1">Total</th>
-                        
-                         <th style="text-align:right" rowspan="1" colspan="1"></th>
-                        <th style="text-align:left" rowspan="1" colspan="1"><?php echo 'k'. $app->sumprincipalsingle($id);?></th>
-                        <th style="text-align:right" rowspan="1" colspan="1"></th>
-                        <th style="text-align:left" rowspan="1" colspan="1"><?php echo 'k'. $app->sumdebtsingle($id);?></th>
-                        
-                        <th style="text-align:left" rowspan="1" colspan="1">-</th>
-                        
-                      </tr>
-                  </tfoot>
+                 
                
               </table>
                 
@@ -133,54 +119,7 @@ height: 70px; /* only if you want fixed height */
 
 
 <!-- /.box-header -->
-                <div class="box-header">
-                  <div class="title">
-                  PAYMENT HISTORY
-                </div>
-                </div>
-                     <div class="box-body with-border">
-              <table class="table table-striped">
-
-               <thead>
             
-                <tr>
- 
-                  <th>Payment Type</th>
-                  <th>Amount</th>                  
-                  <th>Payment Date</th>
-                  <th>Balance</th>
-
-                
-                </tr>
-                </thead>
-
-                <tbody>
-  <?php
-  $sql = $app->singlepayments($id);
-  while($row=mysqli_fetch_array($sql))
-  {
-  ?>
-
-<tr>
-           
-            <td><?php echo $app->getpaytype($row['loanid']);?></td>
-            <td><?php echo 'K'. number_format($row['amount'], 2)?></td>
-            <td><?php echo $row['date']?></td>
-            <td><?php echo 'K'. $app->debtorbalance($row['loanid']);?></td>
-         
-                 
-                </tr>
-  <?php } ?>
-
-
-
-               </tbody>
-
-
-            </table>
-            </div>
-            <!-- /.box-body -->
-
 
           
           </div>

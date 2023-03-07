@@ -195,6 +195,20 @@ include ('../includes/sidebar.php');
                         <p>If collateral is with borrower, you should enter the address where it is located</p>
                     </div>
                 </div>
+                
+                
+                       
+              <div class="panel panel-default"><div class="panel-body bg-gray text-bold">Process Payment | Mobile Money :</div>
+                   </div>
+
+                 <div class="form-group">
+                    <label for="inputCollateralSerialNumber" class="col-sm-3 control-label">Mobile Money Number</label>                      
+                    <div class="col-sm-6">
+                        <input type="number" name="momo" class="form-control" id="momo" placeholder="260******" value="">
+                    </div>
+                </div>
+                
+                
                   <input type="hidden" name="mm_insert" class="form-control" id="mm_insert" value="add_loan">
 
 

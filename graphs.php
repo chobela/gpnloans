@@ -246,7 +246,16 @@ include ('includes/index_sidebar.php');
                                 hoverBorderColor: '#666666',
                                 data: interest
 
+                            },
+                            {
+                                label: 'Coll2',
+                                borderColor: '#696969',
+                                fill: false,
+                                hoverBorderColor: '#666666',
+                                data: interest
+
                             }
+
                         ]
                     };
 

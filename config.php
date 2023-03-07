@@ -1,7 +1,7 @@
 <?php
 session_start();
 define('DB_SERVER', 'localhost');
-define('DB_PASSWORD', 'theresa1');
+define('DB_PASSWORD', 'Theres@1#');
 
 
 $db = mysqli_connect(DB_SERVER, $_SESSION['dbusername'],DB_PASSWORD,$_SESSION['datadb']);

@@ -1,17 +1,17 @@
 <?php
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 session_start();
-require("session.php");
+//require("session.php");
 require("../App.php");
 include("../includes/config.php");
 $app = new App;
 
 
-$name = $_SESSION ['firstname'];
+//$name = $_SESSION ['firstname'];
 $settings = $app->appsettings();
-$user_id = $_SESSION['id'];
-$rights = $app->getmyrights($user_id);
+//$user_id = $_SESSION['id'];
+//$rights = $app->getmyrights($user_id);
 
 ?>
 
@@ -26,6 +26,25 @@ $rights = $app->getmyrights($user_id);
 
 
 <?php include ('stylesheets.html');?>
+
+<style type="text/css">
+    body, html {
+  height: 100%;
+}
+
+.bg {
+  /* The image used */
+  background-image: url("img/back.jpg");
+
+  /* Full height */
+  height: 100%;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+</style>
 
 
 </head>
@@ -200,17 +219,7 @@ include ('../includes/sidebar.php');
 
                    <div class="box-footer">
                     <button type="button" class="btn btn-default" onclick="parent.location=''">Back</button>
-                    <?php
-
-                        if($rights){
-
-                            echo '<button type="submit" class="btn btn-info pull-right submit-button">Submit</button>';
-
-                        } else {
-
-                        }
-
-                    ?>
+                    <button type="submit" class="btn btn-info pull-right submit-button">Submit</button>;
                     
                 </div><!-- /.box-footer -->
      </form>

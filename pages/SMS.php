@@ -10,7 +10,7 @@ class SMS{
 
 
     public $dbHost     = "localhost";
-    public $dbPassword = "theresa1";
+    public $dbPassword = "Theres@1#";
   
     public function __construct(){
         if(!isset($this->db)){
@@ -124,7 +124,7 @@ switch ($postresult[0]) {
       }
 
        if ($result) {
-             return 'success';
+             return $status;
          } else {
              return $this->db->error;
          }

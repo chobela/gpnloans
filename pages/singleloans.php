@@ -291,7 +291,7 @@ include ('../includes/sidebar.php');
                           <div class="btn-group-horizontal">
                               <a type="button" class="btn bg-blue" href="addnewloan.php?did=<?php echo $id?>">Add Loan</a>
                               <a data-toggle="modal" data-target="#modal-payment" class="btn bg-blue" role="button">Add Payment</a>
-                              <a type="button" class="btn bg-blue" href="statement.php?did=<?php echo $id?>">Print Statement</a>
+                             <!-- <a type="button" class="btn bg-blue" href="statement.php?did=<?php echo $id?>&lid=<?php echo $id?>">Print Statement</a>-->
                                 
                           </div>
 
@@ -313,6 +313,7 @@ include ('../includes/sidebar.php');
             
                <tr>
        
+             <td>Statement</td>
              <td>Edit Loan</td>
              <td>Release Date</td>         
              <td>Due Date</td>         
@@ -340,6 +341,17 @@ include ('../includes/sidebar.php');
                
 
 <tr>
+   <td>
+    
+    <a type="button" class="btn btn-default btn-xs" href="<?php echo 'statement.php?lid='.$row['lid'];?>&did=<?php echo $row['did'];?>">
+    
+      <span class="glyphicon glyphicon-list-alt" aria-hidden="true">
+          
+      </span> 
+    </a>
+    
+    
+    </td>
             <td>
     
     <a type="button" class="btn btn-default btn-xs" href="<?php if ($rights) {echo 'editloan.php?lid='.$row['lid'];} else {}?>">
@@ -719,7 +731,7 @@ $(document).ready(function() {
 
       var id = $(this).attr("id");
       console.log(id);
-       var f = 1;
+       var f = "1";
       
        var action = "freezeLoan";
 
@@ -757,7 +769,7 @@ $(document).ready(function() {
     $("#examplef").on('click', '.munfreeze', function(){
 
       var id = $(this).attr("id");
-      var f = 0;
+      var f = "0";
       
        var action = "freezeLoan";
 

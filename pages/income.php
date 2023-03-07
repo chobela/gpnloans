@@ -1,6 +1,6 @@
 <?php
-//error_reporting(E_ALL);
-//ini_set('display_errors', 1);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 require("session.php");
 require("../App.php");
@@ -10,7 +10,6 @@ $app = new App;
 
 $name = $_SESSION ['firstname'];
 $settings = $app->appsettings();
-
 
 ?>
 
@@ -25,11 +24,6 @@ $settings = $app->appsettings();
 
 
 <?php include ('stylesheets.html');?>
-<style type="text/css">
-  label {
-    font-weight: normal;
-}
-</style>
 
 
 </head>
@@ -37,7 +31,7 @@ $settings = $app->appsettings();
 <div class="wrapper">
 
 <?php
-include ('../includes/header.php');
+include ('includes/header.php');
 include ('../includes/sidebar.php');
 ?>
   <!-- Content Wrapper. Contains page content -->
@@ -45,158 +39,72 @@ include ('../includes/sidebar.php');
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-   Income Statement
+      Cash Flow
       </h1>
-     
+       <input type="hidden" id="rights" value="<?php echo $rights;?>">
     </section>
 
     <!-- Main content -->
     <section class="content">
     
-<div class="row">
-        <!-- left column -->
-<div class="col-md-9">
- <div class="box box-info">
 
- 
-
-<div class="box-body">
-
-      <form action="formposts.php" class="form-horizontal" method="post" enctype="multipart/form-data" name="form" id="form">
-
-     <div class="form-group">
-            <div class="col-md-5">
-                    <label style="font-weight: bold;" class="col-md-3 control-label pull-left">Year</label>                      
-                    <div class="col-md-9">
-                        <select class="form-control" name="year" id="year">
-                            <option value="2020">2020</option>
-                             <option value="2021">2021</option>
-                              <option value="2022">2022</option>
-                               <option value="2023">2023</option>
-                                <option value="2024">2024</option>
-                                 <option value="2025">2025</option>
-                                  <option valu0="2026">2026</option>                
-                        </select>
-                    </div>
-                </div>
-      <div class="col-md-5">
-                    <label style="font-weight: bold;" class="col-md-3 control-label pull-left">Month</label>                      
-                    <div class="col-md-9">
-                        <select class="form-control" name="month" id="month">
-                            <option value="0">Select</option>
-                             <?php 
-                           $resc = $app->getmonths();
-                              foreach($resc as $r) { 
-                                echo "<option value=\"$r[id]\">$r[monthname]</option>";
-                              }
-                          ?>
-                        </select>
-                    </div>
-                </div>
-                </div>
-
-<div class="panel panel-default">
-  <div class="row">
-    <div style="text-align: center;" class="col-md-6 panel-heading"><label style="font-weight: bold;" class="control-label">Revenue</label>  </div>
-
-     <div style="text-align: center;" class="col-md-6 panel-heading"><label style="font-weight: bold;" class="control-label">Expenses</label>  </div>
-  </div>
-  
-</div>
-    
-   <div class="form-group">
-    <div class="col-md-6">
-      
-   
-                    <label  class="col-md-5">Interest from Collections</label>                      
-                    <div class="col-md-7">
-                        <input type="text" name="interest" class="form-control" id="interest" value="" disabled="">
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-      
-   
-                    <label  class="col-md-5">Daily Expenses</label>                      
-                    <div class="col-md-7">
-                        <input type="text" name="loans" class="form-control" id="loans" value="500" disabled="">
-                    </div>
-                </div>
-    </div>
-
-    <div class="form-group">
-    <div class="col-md-6">
-       <label  class="col-md-5">Earnings from Sales</label>                      
-                    <div class="col-md-7">
-                        <input type="text" name="loans" class="form-control" id="loans" value="300" disabled="">
-                    </div>
-    </div>
-
-<div class="col-md-6">
-       <label  class="col-md-5">Salaries/Wages</label>                      
-                    <div class="col-md-7">
-                        <input type="text" name="wage" class="form-control" id="wage" value="">
-                    </div>
-    </div>
-
-
-  </div>
-
- <div class="form-group">
-  <div class="col-md-6">
-     
-  </div>
-
-                     <div class="col-md-6">
-      
-   
-                    <label  class="col-md-5">Interest in Savings</label>                      
-                    <div class="col-md-7">
-                        <input type="text" name="loans" class="form-control" id="loans" value="500" disabled="">
-                    </div>
-                    </div>
-                </div>
-
-
-
-   <div class="form-group">
-    <div class="col-md-6">
-       <label  class="col-md-5">Total Revenue</label>                      
-                    <div class="col-md-7">
-                        <input type="text" name="loans" class="form-control" id="loans" value="300" disabled="">
-                    </div>
-    </div>
-
-<div class="col-md-6">
-       <label  class="col-md-5">Total Expenses</label>                      
-                    <div class="col-md-7">
-                        <input type="text" name="loans" class="form-control" id="loans" value="" disabled="">
-                    </div>
-    </div>
-
-
-  </div>
-
-  <hr>
-
-   <div class="form-group">
-    <div class="col-md-6">
-
-<label style="font-weight: bold;">Net Income : K 3400.00</label>
-
-    </div>
-  </div>
+ <div class="box">
+            <div class="box-header">
               
-
-
-              </form>
-
- 
+              <h3 id="response" class="box-title">Cash Book</h3>
+              
             </div>
-</div>
-<!-- /.box -->
-</div>
-</div>
+
+    
+            <!-- /.box-header -->
+            <div class="box-body">
+              <table id="example" class="stripe row-border order-column" style="width:100%">
+                <thead>
+            
+               <tr>
+                  
+                  <th>Date</th>
+                  <th>Details</th>
+                  <th>Amount</th>                  
+                
+                </tr>
+                </thead>
+                <tbody>
+
+                  <?php
+  $sql = $app->viewcashbook();
+  while($row=mysqli_fetch_array($sql))
+  {
+  ?>
+
+<tr>
+            <td><?php echo $row['date'];?></td>
+            <td><?php echo $row['trans'];?></td>
+            <td><?php echo 'K'. number_format($row['cash'], 2)?></td>
+            
+
+                </tr>
+  <?php } ?>
+                </tbody>
+                
+                 <tfoot class="bg-gray">
+                     <tr>
+                        <th style="text-align:right" rowspan="1" colspan="1"></th>
+                        <th style="text-align:right" rowspan="1" colspan="1"></th>
+                       
+                        <th style="text-align:left;" rowspan="1" colspan="1"><?php echo 'k'. $app->mybalance();?></th>
+                        
+                        
+                      </tr>
+                  </tfoot>
+              
+               
+              </table>
+                
+            </div>
+          
+          </div>
+          <!-- /.box -->
 
 
     </section>
@@ -209,91 +117,79 @@ include ('../includes/sidebar.php');
  
 </div>
 
-<script type="text/javascript">
-  
-$(document).ready(function(){
- 
-  // Initialize select2
-  $("#debtor").select2();
-
-});
-
-</script>
-
-<script type="text/javascript">
-
-
-$("#month").change(function(){
-
-var year = $('#year').val();
-var month = $('#month').val();
-
-
-
- $.post("formposts.php",
-    {
-      mm_insert: "incomestatement",
-      month: month,
-      year: year
-    },
-    function(data){
-     $('#interest').val(data);
-    
-  
-    }, "text");
-});
-
-$("#year").change(function(){
-
-
-var year = $('#year').val();
-var month = $('#month').val();
-
-
-
- $.post("formposts.php",
-    {
-      mm_insert: "incomestatement",
-      month: month,
-      year: year
-    },
-    function(data,status){
-      $('#interest').val(data);
-    });
-
-});
-
-</script>
-
-<script type="text/javascript">
-  
-$("#interest").change(function(){
-
-var year = $('#year').val();
-var month = $('#month').val();
-
-
- $.post("formposts.php",
-    {
-      mm_insert: "totalwage",
-      month: month,
-      year: year
-    },
-    function(data){
-     $('#wage').val(data);
-    
-  
-    }, "text");
-});
-
-
-</script>
-
 
  <?php
  include ('scripts.html');
  ?>
+  <script type="text/javascript">
 
+$(document).ready(function() {
+    $('#example').DataTable( {
+        bFilter: true, 
+        filter: true,
+        scrollX : true,
+        bInfo: false,
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ],
+        pageLength : 10,
+        lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'Todos']]
+    } );
+} );
+
+    </script>
+
+          <script type="text/javascript">
+
+$(document).ready(function() {
+    $("#example").on('click', '.reset', function(){
+
+      var id = $(this).attr("id");
+     
+      
+       var action = "reset";
+
+       var rights = document.getElementById('rights').value;
+
+    if (rights) {
+
+    if(confirm("You are about to reset the loan balance to Zero(0)")) {
+      
+    $.ajax({
+      url:"formposts.php",
+      method:"POST",
+      data:{id:id, mm_insert:action},
+      success:function(result) {          
+        
+             //window.location.reload();
+             if(result == 'success'){
+
+                   swal({
+                    //title: "Thanks!",
+                    text: "Loan Balance Reset Successful",
+                    icon: "success"
+                    }).then(function() {
+   window.location.reload();
+});
+
+} else {
+    window.alert('Oops! Something went wrong.');
+}
+
+
+      }
+    })
+  } else {
+    return false;
+  }
+       } else {
+    
+       }
+
+    });
+});
+</script>
 
  
 </body>
